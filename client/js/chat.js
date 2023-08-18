@@ -49,6 +49,51 @@ const handle_ask = async () => {
   }
 };
 
+function download(href) {
+  let download = document.createElement('a');
+  download.href = href;
+  download.download = 'img.png';
+  download.click();
+  download.remove();
+}
+
+const downloadImage = async (imageId) => {
+  const svgElem = document.querySelector(`#svg_image_${imageId}`).innerHTML;
+  console.log("svg element selected = ");
+  console.log(svgElem);
+  // const serializer = new XMLSerializer();
+  // let svgData = serializer.serializeToString(svgElem);
+  let svgData = svgElem;
+  svgData = '<?xml version="1.0" standalone="no"?>\r\n' + svgData;
+  const svgBlob = new Blob([svgData], {
+    type: 'image/svg+xml;charset=utf-8',
+  });
+  let DOMURL = window.URL || window.webkitURL || window;
+  const url = DOMURL.createObjectURL(svgBlob);
+
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const domRect = svgElem.getBBox();
+    canvas.width = domRect.width;
+    canvas.height = domRect.height;
+    ctx.drawImage(img, 0, 0, domRect.width, domRect.height);
+    DOMURL.revokeObjectURL(url);
+
+    const imgURI = canvas
+      .toDataURL('image/png')
+      .replace('image/png', 'image/octet-stream');
+
+    download(imgURI);
+  };
+  img.onerror = (e) => {
+    console.error('Image not loaded', e);
+  };
+
+  img.src = url;
+}
+
 const remove_cancel_button = async () => {
   stop_generating.classList.add(`stop_generating-hiding`);
 
@@ -170,7 +215,8 @@ const ask_gpt = async (message) => {
 
       if (text.startsWith(`<svg`)) {
         console.log("SVG detected");
-        document.getElementById(`gpt_${window.token}`).innerHTML = `<div style="background: white;">${text}</div>`; // Render the SVG
+        let random_uuid = crypto.randomUUID();
+        document.getElementById(`gpt_${window.token}`).innerHTML = `<div style="background: white;" id="svg_img_${random_uuid}">${text}</div><btn onClick='downloadImage("${random_uuid}")' style="cursor: pointer;">Download</btn>`; // Render the SVG
       } else {
         document.getElementById(`gpt_${window.token}`).innerHTML =
           markdown.render(text); // Render markdown-formatted response
