@@ -11,15 +11,17 @@
     <meta property="og:description" content="A conversational AI system that listens, learns, and challenges">
     <meta property="og:url" content="https://chat.acy.dev">
     <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/gpt.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/gpt.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/gpt.png">
     <link rel="manifest" href="/assets/img/site.webmanifest">
     <script src="/assets/js/icons.js"></script>
     <script src="/assets/js/chat.js" defer></script>
+    <script src="//embed.typeform.com/next/embed.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@latest/dist/markdown-it.min.js"></script>
     <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@latest/build/styles/base16/dracula.min.css">
+        href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@latest/build/styles/base16/dracula.min.css">
+    <link rel="stylesheet" href="/assets/css/userModal.css">
     <script>
         const user_image = `<img src="/assets/img/user.png" alt="User Avatar">`;
         const gpt_image = `<img src="/assets/img/gpt.png" alt="GPT Avatar">`;
@@ -45,11 +47,6 @@
         /* Track */
         #message-input::-webkit-scrollbar-track {
             background: #f1f1f1;
-        }
-
-        /* Handle */
-        #message-input::-webkit-scrollbar-thumb {
-            background: #c7a2ff;
         }
 
         /* Handle on hover */
@@ -88,64 +85,80 @@
                 </div>
             </div>
             <div>
-                <button class="new_convo" style="width: 100%;">
-                    <i class="fa-regular fa-question"></i>
-                    <div data-tf-popover="O2rda4KN" data-tf-opacity="100"
-                        data-tf-iframe-props="title=Website Feedback Survey" data-tf-transitive-search-params
-                        data-tf-button-color="#0445AF" data-tf-medium="snippet" style="all:unset;">
-                        <a href="https://acy.typeform.com/to/O2rda4KN" data-tf-popup="O2rda4KN" data-tf-medium="snippet"
-                            style="display:inline-block;text-decoration:none;">
-                            <span>Feedback</span>
-                        </a>
-                    </div>
-                </button>
+                <a href="https://acy.typeform.com/to/O2rda4KN" data-tf-popup="O2rda4KN" data-tf-medium="snippet"
+                    style="display:inline-block;text-decoration:none; width: 100%;">
+                    <button class="new_convo" style="width: 100%;">
+                        <i class="fa-regular fa-question"></i>
+                        <span>Feedback</span>
+                    </button>
+                </a>
             </div>
             <div>
-                <button class="new_convo" style="width: 100%;">
+                <button class="new_convo" id="userProfileBtn" style="width: 100%;">
                     <i class="fa-regular fa-user"></i>
                     <span>Username</span>
                 </button>
             </div>
         </div>
-        <div class="conversation disable-scrollbars">
-            <div class="stop_generating stop_generating-hidden">
-                <button id="cancelButton">
-                    <span>Stop Generating</span>
-                    <i class="fa-regular fa-stop"></i>
-                </button>
-            </div>
-            <div class="box" id="messages">
-            </div>
-            <div class="user-input">
-                <div class="box input-box">
-                    <textarea id="message-input" placeholder="Ask a question" cols="30" rows="10"
-                        style="white-space: pre-wrap;" oninput="resizeTextarea(this)"></textarea>
-                    <div id="send-button">
-                        <i class="fa-regular fa-paper-plane-top"></i>
-                    </div>
+        <div>
+            <button class="new_convo" style="width: 100%;">
+                <i class="fa-regular fa-question"></i>
+                <div data-tf-popover="O2rda4KN" data-tf-opacity="100"
+                    data-tf-iframe-props="title=Website Feedback Survey" data-tf-transitive-search-params
+                    data-tf-button-color="#0445AF" data-tf-medium="snippet" style="all:unset;">
+                    <a href="https://acy.typeform.com/to/O2rda4KN" data-tf-popup="O2rda4KN" data-tf-medium="snippet"
+                        style="display:inline-block;text-decoration:none;">
+                        <span>Feedback</span>
+                    </a>
+                </div>
+            </button>
+        </div>
+        <div>
+            <button class="new_convo" style="width: 100%;">
+                <i class="fa-regular fa-user"></i>
+                <span>Username</span>
+            </button>
+        </div>
+    </div>
+    <div class="conversation disable-scrollbars">
+        <div class="stop_generating stop_generating-hidden">
+            <button id="cancelButton">
+                <span>Stop Generating</span>
+                <i class="fa-regular fa-stop"></i>
+            </button>
+        </div>
+        <div class="box" id="messages">
+        </div>
+        <div class="user-input">
+            <div class="box input-box">
+                <textarea id="message-input" placeholder="Ask a question" cols="30" rows="10"
+                    style="white-space: pre-wrap;" oninput="resizeTextarea(this)"></textarea>
+                <div id="send-button">
+                    <i class="fa-regular fa-paper-plane-top"></i>
                 </div>
             </div>
-            <div class="buttons">
-                <div class="field">
-                    <input type="checkbox" id="switch" />
-                    <label for="switch"></label>
-                    <span class="about">Web Access</span>
-                </div>
-                <div class="field">
-                    <select name="model" id="model">
-                        <option value="gpt-3.5-turbo" selected>model 1</option>
-                        <option value="gpt-4">model 2</option>
-                    </select>
-                    <!-- <span class="about">Model</span> -->
-                </div>
-                <div class="field">
-                    <select name="jailbreak" id="jailbreak">
-                        <option value="default" selected>default</option>
-                        <option value="gpt-math-1.0">math 1.0</option>
-                    </select>
-                </div>
+        </div>
+        <div class="buttons">
+            <div class="field">
+                <input type="checkbox" id="switch" />
+                <label for="switch"></label>
+                <span class="about">Web Access</span>
+            </div>
+            <div class="field">
+                <select name="model" id="model">
+                    <option value="gpt-3.5-turbo" selected>model 1</option>
+                    <option value="gpt-4">model 2</option>
+                </select>
+                <!-- <span class="about">Model</span> -->
+            </div>
+            <div class="field">
+                <select name="jailbreak" id="jailbreak">
+                    <option value="default" selected>default</option>
+                    <option value="gpt-math-1.0">math 1.0</option>
+                </select>
+            </div>
 
-                <!--<form class="color-picker" action="">
+            <!--<form class="color-picker" action="">
                     <fieldset>
                         <legend class="visually-hidden">Pick a color scheme</legend>
                         <label for="light" class="visually-hidden">Light</label>
@@ -164,13 +177,42 @@
                         <input type="radio" title="dark" id="dark" name="theme">
                     </fieldset>
                     </form> -->
-            </div>
         </div>
     </div>
-    <div class="mobile-sidebar">
-        <i class="fa-solid fa-bars"></i>
-    </div>
+    <<<<<<< HEAD </div>
+        <div class="mobile-sidebar">
+            <i class="fa-solid fa-bars"></i>
+        </div>
 </body>
 <script src="//embed.typeform.com/next/embed.js"></script>
 
 </html>
+=======
+<div class="mobile-sidebar">
+    <i class="fa-solid fa-bars"></i>
+</div>
+<div id="userModal" class="modal">
+    <div class="modal-content">
+        <span id="userModalCloseBtn" class="close-button">&times;</span>
+        <div class="profile">
+            <h2>User Profile</h2>
+            <div>
+                <i class="fa-regular fa-user"></i>
+                <span>Vaibhav Sachdeva</span>
+            </div>
+            <div>
+                <i class="fa-regular fa-building"></i>
+                <span>Quantum Leap</span>
+            </div>
+            <div>
+                <i class="fa-regular fa-id-badge"></i>
+                <span>Free Trial</span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="/assets/js/userModal.js"></script>
+
+</html>
+>>>>>>> 3e7bef19a3d686f6d3db3149c19a9ce06dc59b53
